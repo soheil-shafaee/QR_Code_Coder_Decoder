@@ -169,3 +169,7 @@ images/
 
 # UI Files
 *.ui
+
+# Different Files
+Learning_from_this_project/
+
