@@ -8,6 +8,8 @@ import cv2
 
 
 class QRScanner(QMainWindow):
+    """This class for using camera with OpenCv and then decode QR-Code and
+    display into the Line Edit box"""
     def __init__(self):
         super(QRScanner, self).__init__()
 
@@ -35,6 +37,8 @@ class QRScanner(QMainWindow):
         self.show()
 
     def toggle_camera(self):
+        """This function, for turn on to the camera and
+        then after that releasing video."""
         if not self.camera_active:
             self.camera_active = True
             self.timer.start(30)
@@ -45,15 +49,24 @@ class QRScanner(QMainWindow):
             self.capture.release()
 
     def update_frame(self):
+        """This function, update frame of the camera and
+         then display camera into the label then by using decode module from
+         pyzbar library decoding QR-Code"""
+        # This variable check camera turn on and take frame of that
         ret, frame = self.capture.read()
 
         if ret:
+            # Camera is on ret = True, change the color of frame and decode it
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             decode_object = decode(frame)
             if decode_object:
+                # decode object is list of the QR-Code information we need the first one data
                 qr_data = decode_object[0].data.decode("utf-8")
                 self.text_scan.setText(qr_data)
+                print(qr_data)
+        # image variable change the format of the frame from the camera to can display in PyQt label
         image = QImage(rgb_frame.data, rgb_frame.shape[1], rgb_frame.shape[0], QImage.Format_RGB888)
+        # Display camera into label
         self.scan_screen.setPixmap(QPixmap.fromImage(image))
 
 
