@@ -6,7 +6,7 @@ This Python application allows users to scan QR codes using their webcam. The ap
 
 - [Features](#Features)
 - [Usage](#usage)
-- [Contributing](#contributing)
+- [Work Flow](#Workflow)
 - [License](#license)
 - [Contact](#contact)
 
@@ -29,6 +29,7 @@ git clone https://github.com/yourusername/yourproject.git
 # Navigate to the project directory
 cd QR_Code_Coder_Decoder
 # Install requirments
+pip install requirments.txt
 # Run wellcome_page.py
 python wellcome_page.py
 
