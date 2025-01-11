@@ -63,7 +63,6 @@ class QRScanner(QMainWindow):
                 # decode object is list of the QR-Code information we need the first one data
                 qr_data = decode_object[0].data.decode("utf-8")
                 self.text_scan.setText(qr_data)
-                print(qr_data)
         # image variable change the format of the frame from the camera to can display in PyQt label
         image = QImage(rgb_frame.data, rgb_frame.shape[1], rgb_frame.shape[0], QImage.Format_RGB888)
         # Display camera into label
