@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel
 from PyQt5.QtGui import QMovie
+from PyQt5.QtCore import Qt
 from PyQt5 import uic
 from qr_code_scanner import QRScanner
 import sys
@@ -17,13 +18,18 @@ class WellcomePage(QMainWindow):
 
         # Fixed Windows size
         self.setFixedSize(423, 494)
+        self.setWindowFlag(Qt.FramelessWindowHint)
 
         # Finding our Widgets
         self.start_button = self.findChild(QPushButton, "start_button")
+        self.close_button = self.findChild(QPushButton, "close_button")
+        self.mini_button = self.findChild(QPushButton, "mini_button")
         self.gif_label = self.findChild(QLabel, "scan_gif")
 
         # Using button
         self.start_button.clicked.connect(self.let_start)
+        self.close_button.clicked.connect(self.close_window)
+        self.mini_button.clicked.connect(self.minimize_window)
 
         # Play gif in QLabel
         self.movie = QMovie("images/QR.gif")
@@ -40,6 +46,12 @@ class WellcomePage(QMainWindow):
         self.scanner_page = QRScanner()
         self.scanner_page.show()
         self.close()
+
+    def close_window(self):
+        self.close()
+
+    def minimize_window(self):
+        self.showMinimized()
 
 
 if __name__ == "__main__":
