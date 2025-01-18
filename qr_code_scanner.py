@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QLineEdit, QGraphicsEffect, QGraphicsBlurEffect
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtCore import Qt
 from PyQt5 import uic
 from pyzbar.pyzbar import decode
 import sys
@@ -11,30 +12,51 @@ class QRScanner(QMainWindow):
     """This class for using camera with OpenCv and then decode QR-Code and
     display into the Line Edit box"""
     def __init__(self):
-        super(QRScanner, self).__init__()
+        try:
+            super(QRScanner, self).__init__()
 
-        # Load UI file
-        uic.loadUi("scanner.ui", self)
+            # Load UI file
+            uic.loadUi("scanner.ui", self)
+            self.setFixedSize(423, 513)
+            self.setWindowFlag(Qt.FramelessWindowHint)
 
-        # Finding Our Widgets
-        self.scan_button = self.findChild(QPushButton, "scan_button")
-        self.scan_screen = self.findChild(QLabel, "scanning_place")
-        self.text_scan = self.findChild(QLineEdit, "text_scan")
+            # Define Widgets in form
+            self.scan_button = self.findChild(QPushButton, "scan_button")
+            self.generate_qr = self.findChild(QPushButton, "generate_button")
+            self.history_button = self.findChild(QPushButton, "history_button")
+            # Define Widgets in main body
+            self.scan_screen = self.findChild(QLabel, "scanning_place")
+            self.text_scan = self.findChild(QLineEdit, "text_scan")
+            self.image_back = self.findChild(QLabel, "background_image")
+            # Navbar Widgets
+            self.close_window = self.findChild(QPushButton, "close_button")
+            self.minimize_window = self.findChild(QPushButton, "mini_button")
+            # Set Enabled for set Text
+            self.text_scan.setEnabled(False)
 
-        # Initialize Variables
-        self.capture = cv2.VideoCapture(0)
-        self.timer = QTimer()
-        self.camera_active = False
+            # Blur Effect
+            self.blur_effect = QGraphicsBlurEffect()
+            self.blur_effect.setBlurRadius(15)
+            self.image_back.setGraphicsEffect(self.blur_effect)
 
-        # Using Scan button
-        self.scan_button.clicked.connect(self.toggle_camera)
-        self.timer.timeout.connect(self.update_frame)
-        self.text_scan.setText("Your text scan!")
+            # Initialize Variables
+            self.capture = cv2.VideoCapture(0)
+            self.timer = QTimer()
+            self.camera_active = False
+
+            # Using Scan button
+            self.scan_button.clicked.connect(self.toggle_camera)
+            self.timer.timeout.connect(self.update_frame)
+            # self.text_scan.setText("Your text scan!")
+            self.close_window.clicked.connect(self.close_win)
+            self.minimize_window.clicked.connect(self.mini_win)
 
 
 
-        # Display Scanner Window
-        self.show()
+            # Display Scanner Window
+            self.show()
+        except Exception as e:
+            print(e)
 
     def toggle_camera(self):
         """This function, for turn on to the camera and
@@ -52,6 +74,8 @@ class QRScanner(QMainWindow):
         """This function, update frame of the camera and
          then display camera into the label then by using decode module from
          pyzbar library decoding QR-Code"""
+
+
         # This variable check camera turn on and take frame of that
         ret, frame = self.capture.read()
 
@@ -62,11 +86,19 @@ class QRScanner(QMainWindow):
             if decode_object:
                 # decode object is list of the QR-Code information we need the first one data
                 qr_data = decode_object[0].data.decode("utf-8")
+                self.text_scan.setEnabled(True)
                 self.text_scan.setText(qr_data)
+
         # image variable change the format of the frame from the camera to can display in PyQt label
         image = QImage(rgb_frame.data, rgb_frame.shape[1], rgb_frame.shape[0], QImage.Format_RGB888)
         # Display camera into label
         self.scan_screen.setPixmap(QPixmap.fromImage(image))
+
+    def close_win(self):
+        self.close()
+
+    def mini_win(self):
+        self.showMinimized()
 
 
 if __name__ == "__main__":
