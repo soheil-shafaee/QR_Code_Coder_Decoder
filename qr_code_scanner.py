@@ -1,19 +1,33 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QLineEdit, QGraphicsEffect, QGraphicsBlurEffect
-from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QLineEdit, QGraphicsEffect, \
+    QGraphicsBlurEffect
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import Qt
 from PyQt5 import uic
 from pyzbar.pyzbar import decode
 import sys
 import cv2
+import pymysql
+
+from qr_history import HistoryPage
+
+con = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="qr_code"
+)
+cur = con.cursor()
 
 
 class QRScanner(QMainWindow):
     """This class for using camera with OpenCv and then decode QR-Code and
     display into the Line Edit box"""
+
     def __init__(self):
         try:
             super(QRScanner, self).__init__()
+
+            self.qr_detected = False
 
             # Load UI file
             uic.loadUi("scanner.ui", self)
@@ -51,7 +65,8 @@ class QRScanner(QMainWindow):
             self.close_window.clicked.connect(self.close_win)
             self.minimize_window.clicked.connect(self.mini_win)
 
-
+            # Using History button
+            self.history_button.clicked.connect(self.history)
 
             # Display Scanner Window
             self.show()
@@ -75,7 +90,8 @@ class QRScanner(QMainWindow):
          then display camera into the label then by using decode module from
          pyzbar library decoding QR-Code"""
 
-
+        if self.qr_detected:
+            return
         # This variable check camera turn on and take frame of that
         ret, frame = self.capture.read()
 
@@ -88,11 +104,29 @@ class QRScanner(QMainWindow):
                 qr_data = decode_object[0].data.decode("utf-8")
                 self.text_scan.setEnabled(True)
                 self.text_scan.setText(qr_data)
+                com = """INSERT INTO qr_code_logs(Address, Type, DateTime) VALUES(%s, %s, NOW())"""
+                try:
+                    cur.execute(com, (qr_data, "SCAN"))
+                    con.commit()
+                except Exception as e:
+                    print(e)
+                    con.rollback()
+
+                # Stop Timer and turn off Camera
+                self.qr_detected = True
+                self.timer.stop()
+                self.capture.release()
+                self.scan_screen.clear()
 
         # image variable change the format of the frame from the camera to can display in PyQt label
         image = QImage(rgb_frame.data, rgb_frame.shape[1], rgb_frame.shape[0], QImage.Format_RGB888)
         # Display camera into label
         self.scan_screen.setPixmap(QPixmap.fromImage(image))
+
+    def history(self):
+        self.history = HistoryPage()
+        self.history.show()
+        self.close()
 
     def close_win(self):
         self.close()
