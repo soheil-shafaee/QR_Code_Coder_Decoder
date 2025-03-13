@@ -9,6 +9,7 @@ import cv2
 import pymysql
 
 from qr_history import HistoryPage
+from choose_content_page import ChooseContent
 
 con = pymysql.connect(
     host="localhost",
@@ -29,6 +30,9 @@ class QRScanner(QMainWindow):
 
             self.qr_detected = False
 
+            self.history: HistoryPage | None = None
+            self.choose_page: ChooseContent | None = None
+
             # Load UI file
             uic.loadUi("scanner.ui", self)
             self.setFixedSize(423, 513)
@@ -36,7 +40,7 @@ class QRScanner(QMainWindow):
 
             # Define Widgets in form
             self.scan_button = self.findChild(QPushButton, "scan_button")
-            self.generate_qr = self.findChild(QPushButton, "generate_button")
+            self.go_choose = self.findChild(QPushButton, "generate_button")
             self.history_button = self.findChild(QPushButton, "history_button")
             # Define Widgets in main body
             self.scan_screen = self.findChild(QLabel, "scanning_place")
@@ -66,7 +70,10 @@ class QRScanner(QMainWindow):
             self.minimize_window.clicked.connect(self.mini_win)
 
             # Using History button
-            self.history_button.clicked.connect(self.history)
+            self.history_button.clicked.connect(self.go_to_history_page)
+
+            # Using Scanner button
+            self.go_choose.clicked.connect(self.go_to_choose_page)
 
             # Display Scanner Window
             self.show()
@@ -123,9 +130,14 @@ class QRScanner(QMainWindow):
         # Display camera into label
         self.scan_screen.setPixmap(QPixmap.fromImage(image))
 
-    def history(self):
+    def go_to_history_page(self):
         self.history = HistoryPage()
         self.history.show()
+        self.close()
+
+    def go_to_choose_page(self):
+        self.choose_page = ChooseContent()
+        self.choose_page.show()
         self.close()
 
     def close_win(self):
