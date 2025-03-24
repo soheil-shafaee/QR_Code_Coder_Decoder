@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5 import uic
 import sys
 
+from verify.email_verify import email_checking
 
 class EmailPage(QMainWindow):
     def __init__(self):
@@ -39,10 +40,16 @@ class EmailPage(QMainWindow):
             print(e)
             sys.exit(1)
 
-    def generate_qr_code(self):
-        a = self.email_link.text()
-        print(a)
+    @email_checking
+    def email_text_line(self):
+        return self.email_link.text()
 
+
+    def generate_qr_code(self):
+        try:
+            print(self.email_text_line())
+        except Exception as e:
+            print(e)
 def main():
     try:
         app = QApplication(sys.argv)
