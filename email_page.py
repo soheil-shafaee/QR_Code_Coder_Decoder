@@ -1,9 +1,12 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QLineEdit, QMessageBox, QGraphicsBlurEffect
+from PyQt5.QtWidgets import QMainWindow, QApplication, QGraphicsBlurEffect, QLabel, QPushButton, QLineEdit, QMessageBox, \
+    QColorDialog
 from PyQt5.QtCore import Qt
 from PyQt5 import uic
 import sys
 
 from verify.email_verify import email_checking
+import qr_code_scanner as qr
+import qr_history as his
 
 
 class EmailPage(QMainWindow):
@@ -13,6 +16,9 @@ class EmailPage(QMainWindow):
 
         # Variable
         self.blur_effect: QGraphicsBlurEffect | None = None
+        self.color: QColorDialog | None = None
+        self.scan_page: qr.QRScanner | None = None
+        self.history_page: his.HistoryPage | None = None
 
         # Define Widgets
         """Navbar"""
@@ -21,15 +27,24 @@ class EmailPage(QMainWindow):
 
         """Main Body"""
         self.email_link = self.findChild(QLineEdit, "email_link")
+        self.background_color_button = self.findChild(QPushButton, "background_colors")
+        self.background_color_text = self.findChild(QLabel, "background_color_qr_code")
+        self.qr_color_button = self.findChild(QPushButton, "QR_colors")
+        self.qr_color_text = self.findChild(QLabel, "qr_color")
         self.generate_button = self.findChild(QPushButton, "generate_button")
         self.background_image = self.findChild(QLabel, "background_image")
+        self.scan_button = self.findChild(QPushButton, "scan_button")
+        self.history_button = self.findChild(QPushButton, "history_button")
         # Do Action with widgets
         """Navbar"""
         self.close_button.clicked.connect(self.close)
         self.mini_button.clicked.connect(self.showMinimized)
 
         """Main Body"""
+        self.background_color_button.clicked.connect(self.change_background_color)
         self.generate_button.clicked.connect(self.generate_qr_code)
+        self.scan_button.clicked.connect(self.return_scan)
+        self.history_button.clicked.connect(self.go_histor)
 
     def load_ui(self) -> None:
         try:
@@ -47,6 +62,14 @@ class EmailPage(QMainWindow):
         except Exception as e:
             print(e)
             sys.exit(1)
+
+    def change_background_color(self):
+        self.color = QColorDialog().getColor()
+        try:
+            self.background_color_text.setText(str(self.color.name()))
+            self.background_color_text.setColor(self.color.name())
+        except Exception as e:
+            print(e)
 
     @email_checking
     def email_text_line(self):
@@ -66,6 +89,19 @@ class EmailPage(QMainWindow):
                 print(email_valid)
         except ValueError as e:
             print(e)
+
+
+    def return_scan(self):
+        """Going into scan page"""
+        self.scan_page = qr.QRScanner()
+        self.scan_page.show()
+        self.close()
+
+    def go_histor(self):
+        """Going into History page"""
+        self.history_page = his.HistoryPage()
+        self.history_page.show()
+        self.close()
 
 
 def main():
