@@ -45,6 +45,7 @@ class EmailPage(QMainWindow):
         self.generate_button.clicked.connect(self.generate_qr_code)
         self.scan_button.clicked.connect(self.return_scan)
         self.history_button.clicked.connect(self.go_histor)
+        self.background_color_button.clicked.connect(self.change_background_color)
 
     def load_ui(self) -> None:
         try:
@@ -64,10 +65,10 @@ class EmailPage(QMainWindow):
             sys.exit(1)
 
     def change_background_color(self):
-        self.color = QColorDialog().getColor()
+        self.color_tx = QColorDialog().getColor()
         try:
-            self.background_color_text.setText(str(self.color.name()))
-            self.background_color_text.setColor(self.color.name())
+            self.background_color_text.setText(str(self.color_tx.name()))
+            # self.background_color_text.setColor(self.color.name)
         except Exception as e:
             print(e)
 
