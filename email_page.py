@@ -19,6 +19,7 @@ class EmailPage(QMainWindow):
         self.color: QColorDialog | None = None
         self.scan_page: qr.QRScanner | None = None
         self.history_page: his.HistoryPage | None = None
+        self.color_tx: QColorDialog | None = None
 
         # Define Widgets
         """Navbar"""
@@ -45,7 +46,6 @@ class EmailPage(QMainWindow):
         self.generate_button.clicked.connect(self.generate_qr_code)
         self.scan_button.clicked.connect(self.return_scan)
         self.history_button.clicked.connect(self.go_histor)
-        self.background_color_button.clicked.connect(self.change_background_color)
 
     def load_ui(self) -> None:
         try:
@@ -68,7 +68,7 @@ class EmailPage(QMainWindow):
         self.color_tx = QColorDialog().getColor()
         try:
             self.background_color_text.setText(str(self.color_tx.name()))
-            # self.background_color_text.setColor(self.color.name)
+            self.background_color_text.setStyleSheet(f'color:{self.color_tx.name()}')
         except Exception as e:
             print(e)
 
