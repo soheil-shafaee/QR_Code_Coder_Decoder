@@ -20,6 +20,7 @@ class EmailPage(QMainWindow):
         self.scan_page: qr.QRScanner | None = None
         self.history_page: his.HistoryPage | None = None
         self.color_tx: QColorDialog | None = None
+        self.color_Qr: QColorDialog | None = None
 
         # Define Widgets
         """Navbar"""
@@ -30,8 +31,8 @@ class EmailPage(QMainWindow):
         self.email_link = self.findChild(QLineEdit, "email_link")
         self.background_color_button = self.findChild(QPushButton, "background_colors")
         self.background_color_text = self.findChild(QLabel, "background_color_qr_code")
-        self.qr_color_button = self.findChild(QPushButton, "QR_colors")
-        self.qr_color_text = self.findChild(QLabel, "qr_color")
+        self.qr_color_button = self.findChild(QPushButton, "qr_color_button")
+        self.qr_color_text = self.findChild(QLabel, "qr_color_text")
         self.generate_button = self.findChild(QPushButton, "generate_button")
         self.background_image = self.findChild(QLabel, "background_image")
         self.scan_button = self.findChild(QPushButton, "scan_button")
@@ -43,6 +44,7 @@ class EmailPage(QMainWindow):
 
         """Main Body"""
         self.background_color_button.clicked.connect(self.change_background_color)
+        self.qr_color_button.clicked.connect(self.change_Qr_color)
         self.generate_button.clicked.connect(self.generate_qr_code)
         self.scan_button.clicked.connect(self.return_scan)
         self.history_button.clicked.connect(self.go_histor)
@@ -69,6 +71,14 @@ class EmailPage(QMainWindow):
         try:
             self.background_color_text.setText(str(self.color_tx.name()))
             self.background_color_text.setStyleSheet(f'color:{self.color_tx.name()}')
+        except Exception as e:
+            print(e)
+    
+    def change_Qr_color(self):
+        self.color_Qr = QColorDialog().getColor()
+        try:
+            self.qr_color_text.setText(str(self.color_Qr.name()))
+            self.qr_color_text.setStyleSheet(f"color:{self.color_Qr.name()}")
         except Exception as e:
             print(e)
 
