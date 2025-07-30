@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QGraphicsBlurEffect, QLabel, QPushButton, QLineEdit, QMessageBox, \
-    QColorDialog
+    QColorDialog, QComboBox
 from PyQt5.QtCore import Qt
 from PyQt5 import uic
 import sys
@@ -37,6 +37,9 @@ class EmailPage(QMainWindow):
         self.background_image = self.findChild(QLabel, "background_image")
         self.scan_button = self.findChild(QPushButton, "scan_button")
         self.history_button = self.findChild(QPushButton, "history_button")
+        self.version_number = self.findChild(QComboBox, "version_combo")
+        self.box_size_number = self.findChild(QComboBox, "box_size_combo")
+        self.border_number = self.findChild(QComboBox, "border_combo")
         # Do Action with widgets
         """Navbar"""
         self.close_button.clicked.connect(self.close)
@@ -71,6 +74,7 @@ class EmailPage(QMainWindow):
         try:
             self.background_color_text.setText(str(self.color_tx.name()))
             self.background_color_text.setStyleSheet(f'color:{self.color_tx.name()}')
+            print(self.version_number.currentText())
         except Exception as e:
             print(e)
     
