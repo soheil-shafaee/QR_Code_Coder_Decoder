@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QGraphicsBlurEffect, QLab
 from PyQt5.QtCore import Qt
 from PyQt5 import uic
 import sys
+import qrcode
 
 from verify.email_verify import email_checking
 import qr_code_scanner as qr
@@ -74,7 +75,6 @@ class EmailPage(QMainWindow):
         try:
             self.background_color_text.setText(str(self.color_tx.name()))
             self.background_color_text.setStyleSheet(f'color:{self.color_tx.name()}')
-            print(self.version_number.currentText())
         except Exception as e:
             print(e)
     
@@ -101,7 +101,10 @@ class EmailPage(QMainWindow):
                 message.exec_()
                 return
             else:
-                print(email_valid)
+                try:
+                    
+                except Exception as e:
+                    print(e)
         except ValueError as e:
             print(e)
 
@@ -117,6 +120,14 @@ class EmailPage(QMainWindow):
         self.history_page = his.HistoryPage()
         self.history_page.show()
         self.close()
+    
+    def generate_Qr(self):
+        """Generate QR Code with information"""
+        ver = self.version_number.currentText()
+        box_size = self.box_size_number.currentText()
+        border = self.border_number.currentText()
+        qr_create = qrcode.QRCode(version=ver, box_size=box_size, border=border)
+        
 
 
 def main():
