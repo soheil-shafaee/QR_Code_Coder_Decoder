@@ -41,6 +41,7 @@ class EmailPage(QMainWindow):
         self.version_number = self.findChild(QComboBox, "version_combo")
         self.box_size_number = self.findChild(QComboBox, "box_size_combo")
         self.border_number = self.findChild(QComboBox, "border_combo")
+        self.generate = self.findChild(QPushButton, "generate_button")
         # Do Action with widgets
         """Navbar"""
         self.close_button.clicked.connect(self.close)
@@ -52,6 +53,7 @@ class EmailPage(QMainWindow):
         self.generate_button.clicked.connect(self.generate_qr_code)
         self.scan_button.clicked.connect(self.return_scan)
         self.history_button.clicked.connect(self.go_histor)
+        self.generate.clicked.connect(self.generate_qr_code)
 
     def load_ui(self) -> None:
         try:
@@ -102,7 +104,7 @@ class EmailPage(QMainWindow):
                 return
             else:
                 try:
-                    
+                    self.generate_Qr()
                 except Exception as e:
                     print(e)
         except ValueError as e:
@@ -127,8 +129,13 @@ class EmailPage(QMainWindow):
         box_size = self.box_size_number.currentText()
         border = self.border_number.currentText()
         qr_create = qrcode.QRCode(version=ver, box_size=box_size, border=border)
-        
+        email = self.email_link.text()
 
+        qr_create.add_data(email)
+        qr_create.make(fit=True)
+
+        img = qr_create.make_image(fill_color=f"{self.qr_color_text.text()}", back_color=f"{self.background_color_text.text()}").convert("RGB")
+        img.save(f"{self.email_link.text()}.png")
 
 def main():
     try:
